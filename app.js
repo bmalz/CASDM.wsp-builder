@@ -31,6 +31,70 @@ eventEmitter.on('db_connection', function(connection) {
     });
 });
 
+eventEmitter.on('db_select_wspcol', function(connection) {
+    var Request = require('tedious').Request;
+
+    var request = new Request("SELECT * FROM wspcol", function(error) {
+        if (error) {
+            console.error(error);
+        }
+    });
+
+    var wspcol = new Array();
+    request.on('row', function(columns) {
+        var wspcol_item = new Object();
+        columns.forEach(function(column) {
+            if (column.value !== null) {
+                switch (column.metadata.colName) {
+                    case 'id':
+                        wspcol_item.id = column.value;
+                        break;
+                    case 'table_name':
+                        wspcol_item.table_name = column.value;
+                        break;
+                    case 'column_name':
+                        wspcol_item.column_name = column.value;
+                        break;
+                    case 'schema_name':
+                        wspcol_item.schema_name = column.value;
+                        break;
+                    case 'description':
+                        wspcol_item.description = column.value;
+                        break;
+                    case 'display_name':
+                        wspcol_item.display_name = column.value;
+                        break;
+                    case 'type':
+                        wspcol_item.type = column.value;
+                        break;
+                    case 'string_len':
+                        wspcol_item.string_len = column.value;
+                        break;
+                    case 'xrel_table':
+                        wspcol_item.xrel_table = column.value;
+                        break;
+                    case 'on_new_default':
+                        wspcol_item.on_new_default = column.value;
+                        break;
+                    case 'is_indexed':
+                        wspcol_item.is_indexed = column.value;
+                        break;
+                    case 'is_unique':
+                        wspcol_item.is_unique = column.value;
+                        break;
+                    case 'is_required':
+                        wspcol_item.is_required = column.value;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }, this);
+
+        wspcol.push(wspcol_item);
+    });
+});
+
 eventEmitter.on('db_select_wsptbl', function(connection) {
     var Request = require('tedious').Request;
 
