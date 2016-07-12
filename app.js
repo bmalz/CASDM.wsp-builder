@@ -113,7 +113,7 @@ eventEmitter.on('db_select_wspcol', function(connection) {
         wspcol.push(wspcol_item);
         console.log("wspcol " + wspcol_item.id);
     });
-    request.on('done', function(rowCount, more) {
+    request.on('doneInProc', function(rowCount, more) {
         console.log(rowCount + ' rows returned');
     });
     connection.execSql(request);
@@ -167,7 +167,7 @@ eventEmitter.on('db_select_wsptbl', function(connection) {
         wsptbl.push(wsptbl_item);
         console.log("wsptbl " + wsptbl_item.id);
     });
-    request.on('done', function(rowCount, more) {
+    request.on('doneInProc', function(rowCount, more) {
         console.log(rowCount + ' rows returned');
     });
     connection.execSql(request);
