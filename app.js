@@ -1,32 +1,51 @@
 var config = {
     mssql: {
         userName: "sa",
-        password: "",
+        password: "EXimdemo123",
         server: "172.26.46.182",
         database: "mdb"
     }
 };
 
 var Connection = require("tedious").Connection;
-var connection = new Connection({
-    userName: config.mssql.userName,
-    password: config.mssql.password,
-    server: config.mssql.server,
-    options: {
-        database: config.mssql.database
-    }
-});
 
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
-eventEmitter.on('db_connection', function(connection) {
+eventEmitter.on('db_connection', function() {
+    var connection = new Connection({
+        userName: config.mssql.userName,
+        password: config.mssql.password,
+        server: config.mssql.server,
+        options: {
+            database: config.mssql.database
+        }
+    });
+
     connection.on("connect", function(error) {
         if (error) {
             return console.error(error);
         } else {
             console.log('Connected to ' + config.mssql.database + '!');
             eventEmitter.emit('db_select_wsptbl', connection);
+        }
+    });
+
+    var connection1 = new Connection({
+        userName: config.mssql.userName,
+        password: config.mssql.password,
+        server: config.mssql.server,
+        options: {
+            database: config.mssql.database
+        }
+    });
+
+    connection1.on("connect", function(error) {
+        if (error) {
+            return console.error(error);
+        } else {
+            console.log('Connected to ' + config.mssql.database + '!');
+            eventEmitter.emit('db_select_wspcol', connection1);
         }
     });
 });
@@ -92,7 +111,12 @@ eventEmitter.on('db_select_wspcol', function(connection) {
         }, this);
 
         wspcol.push(wspcol_item);
+        console.log("wspcol " + wspcol_item.id);
     });
+    request.on('done', function(rowCount, more) {
+        console.log(rowCount + ' rows returned');
+    });
+    connection.execSql(request);
 });
 
 eventEmitter.on('db_select_wsptbl', function(connection) {
@@ -141,6 +165,7 @@ eventEmitter.on('db_select_wsptbl', function(connection) {
         }, this);
 
         wsptbl.push(wsptbl_item);
+        console.log("wsptbl " + wsptbl_item.id);
     });
     request.on('done', function(rowCount, more) {
         console.log(rowCount + ' rows returned');
@@ -148,4 +173,4 @@ eventEmitter.on('db_select_wsptbl', function(connection) {
     connection.execSql(request);
 });
 
-eventEmitter.emit('db_connection', connection);
+eventEmitter.emit('db_connection');
